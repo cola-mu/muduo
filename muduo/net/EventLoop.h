@@ -101,8 +101,8 @@ class EventLoop : noncopyable
 
   // internal usage
   void wakeup();
-  void updateChannel(Channel* channel);
-  void removeChannel(Channel* channel);
+  void updateChannel(Channel* channel);//在poller中添加或者更系通道
+  void removeChannel(Channel* channel);//从poller中移除通道
   bool hasChannel(Channel* channel);
 
   // pid_t threadId() const { return threadId_; }
@@ -142,7 +142,7 @@ class EventLoop : noncopyable
   bool eventHandling_; /* atomic */
   bool callingPendingFunctors_; /* atomic */
   int64_t iteration_;
-  const pid_t threadId_;
+  const pid_t threadId_;//当前所属线程id
   Timestamp pollReturnTime_;
   std::unique_ptr<Poller> poller_;
   std::unique_ptr<TimerQueue> timerQueue_;
@@ -153,8 +153,8 @@ class EventLoop : noncopyable
   boost::any context_;
 
   // scratch variables
-  ChannelList activeChannels_;
-  Channel* currentActiveChannel_;
+  ChannelList activeChannels_;//poller返回的活动通道
+  Channel* currentActiveChannel_;//当前正在处理的活动通道
 
   mutable MutexLock mutex_;
   std::vector<Functor> pendingFunctors_ GUARDED_BY(mutex_);
