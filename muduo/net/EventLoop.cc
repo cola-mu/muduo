@@ -26,6 +26,7 @@ using namespace muduo::net;
 
 namespace
 {
+  //当前线程eventloop 对象指针
 __thread EventLoop* t_loopInThisThread = 0;
 
 const int kPollTimeMs = 10000;
