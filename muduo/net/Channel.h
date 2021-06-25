@@ -91,15 +91,15 @@ class Channel : noncopyable
   static const int kWriteEvent;
 
   EventLoop* loop_;
-  const int  fd_;
-  int        events_;
-  int        revents_; // it's the received event types of epoll or poll
-  int        index_; // used by Poller.
+  const int  fd_;//文件描述符，但不负责关闭该文件描述符
+  int        events_;//关注的事件
+  int        revents_; //poll/epoll返回的事件
+  int        index_; // used by Poller.表示在poll的事件数组中的序号
   bool       logHup_;
 
   std::weak_ptr<void> tie_;
   bool tied_;
-  bool eventHandling_;
+  bool eventHandling_;//是否处于处理事件中
   bool addedToLoop_;
   ReadEventCallback readCallback_;
   EventCallback writeCallback_;
