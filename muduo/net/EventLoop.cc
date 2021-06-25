@@ -100,10 +100,12 @@ EventLoop::~EventLoop()
   ::close(wakeupFd_);
   t_loopInThisThread = NULL;
 }
-
+//时间循环不能跨线程调用
+//只能在创建该循环的线程中调用
 void EventLoop::loop()
 {
   assert(!looping_);
+  //断言当前处于创建该循环的线程中
   assertInLoopThread();
   looping_ = true;
   quit_ = false;  // FIXME: what if someone calls quit() before loop() ?
