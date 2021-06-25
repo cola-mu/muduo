@@ -101,10 +101,12 @@ void PollPoller::updateChannel(Channel* channel)
     pfd.fd = channel->fd();
     pfd.events = static_cast<short>(channel->events());
     pfd.revents = 0;
+    //将一个通道暂时更改为不关注事件，但是不从poller中移除该通道
     if (channel->isNoneEvent())
     {
       // ignore this pollfd
-      pfd.fd = -channel->fd()-1;
+      //pfd.fd可直接设置为-1
+      pfd.fd = -channel->fd()-1;//这样子设置是为了removechannel优化
     }
   }
 }
