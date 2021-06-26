@@ -64,7 +64,9 @@ class TimerQueue : noncopyable
   // called when timerfd alarms
   void handleRead();
   // move out all expired timers
+  //返回超时定时器列表
   std::vector<Entry> getExpired(Timestamp now);
+  //重置超时定时器
   void reset(const std::vector<Entry>& expired, Timestamp now);
 
   bool insert(Timer* timer);
@@ -74,11 +76,11 @@ class TimerQueue : noncopyable
   Channel timerfdChannel_;
   // Timer list sorted by expiration
   TimerList timers_;
-
+  //timers_按照到期时间排序，activetimers按照对象地址排序
   // for cancel()
   ActiveTimerSet activeTimers_;
   bool callingExpiredTimers_; /* atomic */
-  ActiveTimerSet cancelingTimers_;
+  ActiveTimerSet cancelingTimers_;//被取消的定时器
 };
 
 }  // namespace net
