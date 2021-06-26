@@ -37,7 +37,7 @@ int createTimerfd()
   }
   return timerfd;
 }
-
+//计算超时时刻和当前时间的时间差
 struct timespec howMuchTimeFromNow(Timestamp when)
 {
   int64_t microseconds = when.microSecondsSinceEpoch()
@@ -53,7 +53,7 @@ struct timespec howMuchTimeFromNow(Timestamp when)
       (microseconds % Timestamp::kMicroSecondsPerSecond) * 1000);
   return ts;
 }
-
+//清除定时器，避免一致触发
 void readTimerfd(int timerfd, Timestamp now)
 {
   uint64_t howmany;
@@ -64,7 +64,7 @@ void readTimerfd(int timerfd, Timestamp now)
     LOG_ERROR << "TimerQueue::handleRead() reads " << n << " bytes instead of 8";
   }
 }
-
+//重置定时器超时时间
 void resetTimerfd(int timerfd, Timestamp expiration)
 {
   // wake up loop by timerfd_settime()
@@ -164,7 +164,7 @@ void TimerQueue::handleRead()
 {
   loop_->assertInLoopThread();
   Timestamp now(Timestamp::now());
-  readTimerfd(timerfd_, now);
+  readTimerfd(timerfd_, now);//清除事件，避免一致触发
 
   std::vector<Entry> expired = getExpired(now);
 
@@ -208,6 +208,7 @@ void TimerQueue::reset(const std::vector<Entry>& expired, Timestamp now)
   for (const Entry& it : expired)
   {
     ActiveTimer timer(it.second, it.second->sequence());
+    //如果是重复的定时器并且是未取消的定时器，则重启该定时器
     if (it.second->repeat()
         && cancelingTimers_.find(timer) == cancelingTimers_.end())
     {
